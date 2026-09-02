@@ -1,0 +1,12 @@
+/*
+!api
+!resource
+!vercel.json
+
+/api/*
+!/api/worker.js
+
+/resource/*
+!/resource/public
+/resource/public/*
+!/resource/public/index.html
