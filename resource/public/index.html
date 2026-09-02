@@ -1,19 +1,231 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>MoneyPrinterTurbo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MoneyPrinterTurbo · Music Video Studio</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#080a10;color:#f5f7fb;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{max-width:1240px;margin:auto;padding:30px 18px 80px}.hero{padding:12px 0 24px}.eyebrow{font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#9a92ff}.hero h1{margin:8px 0 10px;font-size:clamp(38px,6vw,68px);line-height:1;letter-spacing:-.055em}.hero p{max-width:820px;color:#a9b0c3;line-height:1.55;font-size:16px}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.badge{border:1px solid #2c3142;background:#111522;border-radius:999px;padding:7px 10px;font-size:12px}.ok{color:#79e3b0}.bad{color:#ff8f9f}.layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:20px}.card{background:linear-gradient(180deg,#131722,#0c0f17);border:1px solid #252b3a;border-radius:20px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.28)}h2{margin:0 0 16px;font-size:19px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}label{display:block;margin:0 0 6px;color:#dfe3ef;font-size:12px;font-weight:800}input,select,textarea{width:100%;border:1px solid #343b50;border-radius:11px;background:#090c13;color:white;padding:11px 12px;font:inherit}textarea{min-height:100px;resize:vertical}button{border:0;border-radius:11px;padding:10px 12px;background:#272e43;color:#fff;font-weight:800;cursor:pointer}button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}.primary{width:100%;padding:14px;background:linear-gradient(135deg,#7358ff,#d44ec8)}.success{background:#155240}.danger{background:#63303a}.secondary{background:#32394f}.status{margin-top:12px;padding:12px;border-radius:11px;background:#090c13;border:1px solid #252c3c;color:#cdd3e3;font-size:12px;white-space:pre-wrap;min-height:44px}.worker-row{display:flex;gap:8px}.worker-row input{flex:1}.muted{font-size:12px;color:#8992a8;line-height:1.45}.scene-list{display:grid;gap:12px}.scene{background:#090c13;border:1px solid #2a3040;border-radius:15px;padding:14px}.scene-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.scene-title{font-size:12px;font-weight:900}.scene-state{font-size:11px;color:#9d92ff}.scene p{font-size:12px;color:#a4acc0;line-height:1.45;margin:9px 0}.scene-actions{display:flex;flex-wrap:wrap;gap:7px}.scene video{display:block;width:100%;margin-top:12px;border-radius:12px;background:#000;max-height:360px}.progress{height:6px;background:#1c2230;border-radius:999px;margin:10px 0;overflow:hidden}.progress>div{height:100%;width:0;background:linear-gradient(90deg,#755dff,#d652cf);transition:width .3s}.final{margin-top:14px;padding-top:14px;border-top:1px solid #282e3d}.download{display:inline-block;text-decoration:none;color:white;font-weight:900;background:#175c48;border-radius:11px;padding:11px 13px}.hidden{display:none}@media(max-width:900px){.layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+  </style>
 </head>
 <body>
-<h1>MoneyPrinterTurbo</h1>
-<a href="https://github.com/harry0703/MoneyPrinterTurbo">https://github.com/harry0703/MoneyPrinterTurbo</a>
-<p>
-    只需提供一个视频 主题 或 关键词 ，就可以全自动生成视频文案、视频素材、视频字幕、视频背景音乐，然后合成一个高清的短视频。
-</p>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">MoneyPrinterTurbo · Music Video Studio</div>
+    <h1>Tu canción. Tu imagen. Tu videoclip.</h1>
+    <p>La web queda en Vercel y el render pesado se ejecuta en tu Mac. Subís una canción y una foto o video, generás las escenas una por una y al final se monta el videoclip completo.</p>
+    <div class="badges">
+      <span class="badge">Sin API paga obligatoria</span>
+      <span class="badge">ComfyUI local</span>
+      <span class="badge">WAN 2.2 + fallback</span>
+      <span class="badge" id="workerBadge">Worker: buscando…</span>
+    </div>
+  </section>
 
-<p>
-    Simply provide a topic or keyword for a video, and it will automatically generate the video copy, video materials,
-    video subtitles, and video background music before synthesizing a high-definition short video.
-</p>
+  <div class="layout">
+    <section class="card">
+      <h2>Nuevo videoclip</h2>
+      <div class="full" style="margin-bottom:14px">
+        <label>Worker de generación</label>
+        <div class="worker-row">
+          <input id="workerUrl" placeholder="https://...trycloudflare.com">
+          <button type="button" id="detectWorker">Detectar</button>
+        </div>
+        <div class="muted">Se detecta automáticamente desde AI Music Video Studio. Si el túnel cambia, podés pegar la nueva URL acá.</div>
+      </div>
+
+      <form id="createForm" class="grid">
+        <div><label>Canción</label><input type="file" name="song" accept="audio/*" required></div>
+        <div><label>Foto o video</label><input type="file" name="visual" accept="image/*,video/*" required></div>
+        <div><label>Título</label><input name="title" value="Mi videoclip"></div>
+        <div><label>Estilo</label><select name="style"><option value="cinematic rock">Cinematic Rock</option><option value="romantic film">Romántico</option><option value="urban night">Urbano nocturno</option><option value="live performance">Performance</option><option value="dreamlike surreal">Surreal / Dream</option></select></div>
+        <div><label>Formato</label><select name="aspect"><option value="16:9">16:9 YouTube</option><option value="9:16">9:16 Vertical</option></select></div>
+        <div><label>Calidad</label><select name="quality"><option value="preview" selected>Preview rápido</option><option value="final">Final</option><option value="master">Master</option></select></div>
+        <div class="full"><label>Letra (opcional)</label><textarea name="lyrics" placeholder="Pegá la letra si querés que el director detecte partes cantadas…"></textarea></div>
+        <div class="full"><label>Checkpoint ComfyUI</label><input id="checkpoint" value="v1-5-pruned-emaonly.safetensors"></div>
+        <div class="full"><button class="primary" id="createBtn">Analizar canción y crear storyboard</button></div>
+      </form>
+      <div id="mainStatus" class="status">Listo. Primero comprobamos el worker.</div>
+
+      <div class="final">
+        <button id="assembleBtn" class="success" disabled>Montar videoclip final</button>
+        <span class="muted"> Se habilita cuando las escenas están aprobadas.</span>
+        <div id="finalResult" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Storyboard y escenas</h2>
+      <div id="projectInfo" class="muted">Todavía no hay proyecto cargado.</div>
+      <div id="sceneList" class="scene-list" style="margin-top:13px"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+let worker="";
+let currentProject=null;
+let currentMeta=null;
+const busyScenes=new Set();
+
+function cleanWorker(v){return String(v||"").trim().replace(/\/+$/,'')}
+function setStatus(text){$('#mainStatus').textContent=text}
+function workerEndpoint(path){return cleanWorker(worker)+path}
+
+async function jsonFetch(url,opts={}){
+  const r=await fetch(url,opts);
+  let j={};
+  try{j=await r.json()}catch{j={detail:await r.text()}}
+  if(!r.ok)throw new Error(j.detail||j.message||`HTTP ${r.status}`);
+  return j;
+}
+
+async function detectWorker(){
+  $('#workerBadge').textContent='Worker: buscando…';
+  try{
+    const data=await jsonFetch('/api/music-video/worker');
+    worker=cleanWorker(data.worker_url);
+    $('#workerUrl').value=worker;
+    localStorage.setItem('mpt-music-worker',worker);
+    const health=await jsonFetch(workerEndpoint('/api/health'));
+    $('#workerBadge').textContent=`Worker ${health.version||''}: online`;
+    $('#workerBadge').className='badge ok';
+    setStatus(`Worker conectado\n${worker}\nComfyUI: ${health.comfyui?'online':'offline'}`);
+  }catch(err){
+    worker=cleanWorker($('#workerUrl').value||localStorage.getItem('mpt-music-worker'));
+    $('#workerBadge').textContent='Worker: revisar conexión';
+    $('#workerBadge').className='badge bad';
+    setStatus('No pude detectar el worker automáticamente: '+err.message+'\nSi el worker está encendido, pegá su URL arriba y presioná Detectar.');
+  }
+}
+
+$('#detectWorker').addEventListener('click',async()=>{
+  const typed=cleanWorker($('#workerUrl').value);
+  if(typed){worker=typed;localStorage.setItem('mpt-music-worker',worker)}
+  try{
+    const h=await jsonFetch(workerEndpoint('/api/health'));
+    $('#workerBadge').textContent=`Worker ${h.version||''}: online`;
+    $('#workerBadge').className='badge ok';
+    setStatus(`Conectado a ${worker}\nComfyUI: ${h.comfyui?'online':'offline'}`);
+  }catch(err){await detectWorker()}
+});
+
+$('#workerUrl').value=localStorage.getItem('mpt-music-worker')||'';
+
+document.querySelector('#createForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!worker){await detectWorker();if(!worker)return}
+  const btn=$('#createBtn');btn.disabled=true;
+  setStatus('Subiendo archivos y analizando la canción…');
+  $('#sceneList').innerHTML='';$('#finalResult').innerHTML='';
+  try{
+    const fd=new FormData(e.target);
+    const data=await jsonFetch(workerEndpoint('/api/projects/storyboard'),{method:'POST',body:fd});
+    currentProject=data.id;
+    localStorage.setItem('mpt-music-project',currentProject);
+    setStatus(`Proyecto ${data.id}\nDuración: ${Number(data.duration||0).toFixed(1)}s\nEscenas: ${(data.storyboard||[]).length}\nBPM: ${data.analysis?.bpm??'no detectado'}`);
+    await reloadProject();
+  }catch(err){setStatus('Error al crear proyecto: '+err.message)}
+  finally{btn.disabled=false}
+});
+
+function scenePercent(s){
+  const state=s.auto_pipeline_state||'idle';
+  if(state==='idle')return 0;
+  if(state==='waiting_image')return 25;
+  if(state==='waiting_video')return 60;
+  if(state==='ready_for_review')return 100;
+  if(state==='failed'||state==='blocked')return 100;
+  return s.generated_clip?85:s.generated_image?50:15;
+}
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function renderProject(meta){
+  currentMeta=meta;
+  const rows=meta.storyboard||[];
+  $('#projectInfo').textContent=`Proyecto ${meta.id||currentProject} · ${rows.length} escenas · ${meta.aspect||''} · ${meta.quality||''}`;
+  $('#sceneList').innerHTML=rows.map(s=>{
+    const ready=(s.auto_pipeline_state==='ready_for_review'||s.status==='ready_for_review');
+    const busy=busyScenes.has(Number(s.id));
+    const approved=!!s.approved;
+    const preview=ready?`<video controls preload="metadata" src="${workerEndpoint(`/api/projects/${currentProject}/scenes/${s.id}/preview`)}?v=${Date.now()}"></video>`:'';
+    return `<article class="scene" id="scene-${s.id}">
+      <div class="scene-head"><div class="scene-title">ESCENA ${s.id} · ${s.start}s–${s.end}s</div><div class="scene-state">${esc(s.auto_pipeline_state||s.status||'planned')}${approved?' · APROBADA ✓':''}</div></div>
+      <div class="progress"><div style="width:${scenePercent(s)}%"></div></div>
+      <p>${esc(s.director_prompt||s.prompt||s.lyrics||'')}</p>
+      <div class="scene-actions">
+        <button class="primary" onclick="generateScene(${s.id})" ${busy?'disabled':''}>${busy?'Generando…':'Generar esta escena'}</button>
+        <button class="success" onclick="approveScene(${s.id})" ${ready&&!approved?'':'disabled'}>Aprobar</button>
+        <button class="danger" onclick="regenerateScene(${s.id})" ${busy?'disabled':''}>Volver a generar</button>
+      </div>${preview}</article>`
+  }).join('');
+  const allApproved=rows.length>0&&rows.every(s=>s.approved);
+  $('#assembleBtn').disabled=!allApproved;
+}
+
+async function reloadProject(){
+  if(!currentProject||!worker)return;
+  try{const meta=await jsonFetch(workerEndpoint(`/api/projects/${currentProject}`));renderProject(meta)}catch(err){setStatus('No pude refrescar el proyecto: '+err.message)}
+}
+
+window.generateScene=async function(id){
+  if(busyScenes.has(Number(id)))return;
+  const checkpoint=$('#checkpoint').value.trim();
+  if(!checkpoint){setStatus('Falta el checkpoint de ComfyUI.');return}
+  busyScenes.add(Number(id));await reloadProject();
+  setStatus(`Escena ${id}: iniciando pipeline…`);
+  try{
+    for(let attempt=0;attempt<240;attempt++){
+      const data=await jsonFetch(workerEndpoint(`/api/projects/${currentProject}/scenes/${id}/auto-pipeline`),{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({checkpoint,image_steps:24,image_cfg:6,fps:24,use_face_refine:true,use_lipsync:true,use_upscale:false,strict_optional:false})
+      });
+      const state=data.auto_state||data.status||'procesando';
+      setStatus(`Escena ${id}: ${state}${data.last_error?'\n'+data.last_error:''}`);
+      await reloadProject();
+      if(state==='ready_for_review'){setStatus(`Escena ${id} lista para revisar.`);return}
+      if(state==='failed'||state==='blocked')throw new Error(data.last_error||state);
+      await sleep(3000);
+    }
+    throw new Error('Tiempo máximo de espera alcanzado');
+  }catch(err){setStatus(`Escena ${id}: ${err.message}`)}
+  finally{busyScenes.delete(Number(id));await reloadProject()}
+}
+
+window.approveScene=async function(id){
+  try{
+    await jsonFetch(workerEndpoint(`/api/projects/${currentProject}/scenes/${id}`),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({approved:true})});
+    setStatus(`Escena ${id} aprobada.`);await reloadProject();
+  }catch(err){setStatus('No pude aprobar la escena: '+err.message)}
+}
+
+window.regenerateScene=async function(id){
+  if(busyScenes.has(Number(id)))return;
+  try{
+    await jsonFetch(workerEndpoint(`/api/projects/${currentProject}/scenes/${id}/reset-generation`),{method:'POST'});
+    setStatus(`Escena ${id} reiniciada. Generando una versión nueva…`);await reloadProject();
+    await window.generateScene(id);
+  }catch(err){setStatus('No pude reiniciar la escena: '+err.message)}
+}
+
+$('#assembleBtn').addEventListener('click',async()=>{
+  $('#assembleBtn').disabled=true;setStatus('Montando el videoclip final con las escenas aprobadas…');
+  try{
+    await jsonFetch(workerEndpoint(`/api/projects/${currentProject}/assemble-ai`),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({approved_only:true})});
+    const url=workerEndpoint(`/api/projects/${currentProject}/download-ai`);
+    $('#finalResult').innerHTML=`<a class="download" href="${url}">Descargar videoclip final</a>`;
+    setStatus('Videoclip final listo.');
+  }catch(err){setStatus('No pude montar el videoclip: '+err.message)}
+  finally{await reloadProject()}
+});
+
+(async()=>{
+  await detectWorker();
+  const saved=localStorage.getItem('mpt-music-project');
+  if(saved&&worker){currentProject=saved;await reloadProject()}
+})();
+</script>
 </body>
 </html>
