@@ -4,10 +4,6 @@
   "installCommand": "",
   "rewrites": [
     {
-      "source": "/api/music-video/worker",
-      "destination": "/api/worker.js"
-    },
-    {
       "source": "/",
       "destination": "/resource/public/index.html"
     }
