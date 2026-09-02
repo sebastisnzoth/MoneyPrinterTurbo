@@ -5,12 +5,12 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/resource/public/studio-v2.html"
+      "destination": "/resource/public/studio-v3.html"
     }
   ],
   "headers": [
     {
-      "source": "/resource/public/studio-v2.html",
+      "source": "/resource/public/studio-v3.html",
       "headers": [
         {
           "key": "Cache-Control",
