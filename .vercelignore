@@ -10,3 +10,4 @@
 /resource/public/*
 !/resource/public/index.html
 !/resource/public/studio-v2.html
+!/resource/public/studio-v3.html
