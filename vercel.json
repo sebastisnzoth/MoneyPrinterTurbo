@@ -1,0 +1,26 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "",
+  "rewrites": [
+    {
+      "source": "/api/music-video/worker",
+      "destination": "/api/worker.js"
+    },
+    {
+      "source": "/",
+      "destination": "/resource/public/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/resource/public/index.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
+        }
+      ]
+    }
+  ]
+}
